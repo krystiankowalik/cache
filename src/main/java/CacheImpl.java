@@ -1,3 +1,7 @@
+import com.kryx07.cache.item.CacheItem;
+import com.kryx07.cache.item.CacheItemImpl;
+import com.kryx07.cache.view.CacheView;
+import com.kryx07.cache.view.CacheViewImpl;
 import org.apache.commons.collections4.map.ListOrderedMap;
 
 public class CacheImpl implements Cache {

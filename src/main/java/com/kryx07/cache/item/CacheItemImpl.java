@@ -1,11 +1,11 @@
-import java.util.stream.Stream;
+package com.kryx07.cache.item;
 
 public class CacheItemImpl implements CacheItem {
 
     private String key;
     private Object value;
 
-    CacheItemImpl(String key, Object value) {
+    public CacheItemImpl(String key, Object value) {
         this.key = key;
         this.value = value;
     }
