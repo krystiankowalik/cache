@@ -13,17 +13,17 @@ public class CacheViewImpl implements CacheView {
     }
 
     @Override
-    public int size() {
+    public synchronized int size() {
         return cachedItems.size();
     }
 
     @Override
-    public CacheItem getItem(int index) {
+    public synchronized CacheItem getItem(int index) {
         return cachedItems.getValue(index);
     }
 
     @Override
-    public CacheItem getItem(String key) {
+    public synchronized CacheItem  getItem(String key) {
         return cachedItems.get(key);
     }
 }

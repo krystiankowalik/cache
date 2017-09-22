@@ -1,5 +1,7 @@
 package com.kryx07.cache.item;
 
+import java.util.Objects;
+
 public class CacheItemImpl implements CacheItem {
 
     private String key;
@@ -18,5 +20,19 @@ public class CacheItemImpl implements CacheItem {
     @Override
     public Object getValue() {
         return value;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CacheItemImpl cacheItem = (CacheItemImpl) o;
+        return Objects.equals(key, cacheItem.key) &&
+                Objects.equals(value, cacheItem.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(key, value);
     }
 }

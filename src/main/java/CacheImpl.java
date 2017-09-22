@@ -31,11 +31,14 @@ public class CacheImpl implements Cache {
 
     @Override
     public void invalidateCache() {
-        cachedItems.clear();
+        synchronized (this) {
+            cachedItems.clear();
+        }
     }
 
     @Override
     public CacheView getView() {
+
         return new CacheViewImpl(cachedItems);
     }
 }
