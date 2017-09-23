@@ -13,7 +13,7 @@ public class CacheViewImpl implements CacheView {
     }
 
     @Override
-    public synchronized int size() {
+    public  int size() {
         return cachedItems.size();
     }
 

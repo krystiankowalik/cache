@@ -20,12 +20,10 @@ public class CacheImpl implements Cache {
     @Override
     public CacheItem cacheItem(Object item, String key) {
         CacheItem cacheItem = new CacheItemImpl(key, item);
-        synchronized (this) {
             cachedItems.put(key, cacheItem);
             if (cachedItems.size() > maxCacheSize) {
                 cachedItems.remove(0);
             }
-        }
         return cacheItem;
     }
 

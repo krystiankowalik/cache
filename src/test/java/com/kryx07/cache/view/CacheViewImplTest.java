@@ -14,18 +14,13 @@ import java.util.Random;
 
 import static org.junit.Assert.*;
 
-public class CacheViewTest {
+public class CacheViewImplTest {
 
     private CacheView cacheView;
 
     @Before
 
     public void setUp() throws Exception {
-        cacheView = new CacheViewImpl(new ListOrderedMap<>());
-    }
-
-    @After
-    public void tearDown() {
         cacheView = new CacheViewImpl(new ListOrderedMap<>());
     }
 
@@ -103,11 +98,11 @@ public class CacheViewTest {
         cacheView = new CacheViewImpl(sampleCache);
 
         /*
-        * check if the item behid the queried index matches the corresponding item from the list and a newly created
+        * check if the item under the queried index matches the corresponding item from the list and a newly created
         * item with the same key and value - may catch problems within the equals method of the underlying model object
         */
 
-        for (int i =0; i<cacheView.size(); ++i){
+        for (int i = 0; i < cacheView.size(); ++i) {
             assertEquals(list.get(i), cacheView.getItem(i));
             assertEquals(new CacheItemImpl(Character.toString((char) i), i), cacheView.getItem(i));
         }
@@ -116,6 +111,18 @@ public class CacheViewTest {
 
     @Test
     public void getItemByKeyTest() throws Exception {
+        ListOrderedMap<String, CacheItem> sampleCache = new ListOrderedMap<>();
+        for (int i = 0; i <= 3000; ++i) {
+            sampleCache.put(Character.toString((char) i), new CacheItemImpl(Character.toString((char) i), i));
+        }
+        cacheView = new CacheViewImpl(sampleCache);
+
+        int queriedChar = 500;
+        assertEquals(new CacheItemImpl(Character.toString((char) queriedChar), queriedChar), cacheView.getItem(Character.toString((char) queriedChar)));
+        assertEquals(new CacheItemImpl("a", 97),cacheView.getItem("a"));
+        assertEquals(new CacheItemImpl("b", 98),cacheView.getItem("b"));
+        assertEquals(new CacheItemImpl("c", 99),cacheView.getItem("c"));
+        assertEquals(new CacheItemImpl("d", 100),cacheView.getItem("d"));
 
     }
 
