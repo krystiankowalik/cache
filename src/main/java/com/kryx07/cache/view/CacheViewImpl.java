@@ -37,6 +37,13 @@ public class CacheViewImpl implements CacheView {
                 .findFirst()
                 .orElseGet(null);*/
 
+
+      /*
+      * Binary search
+      * */
+        /*Object[] keys =  cachedItems.stream().map(cacheItem -> cacheItem.getKey()).toArray();
+        return getItem(Arrays.binarySearch(keys, key));*/
+
         /*
         * Iterator
         * */
@@ -49,6 +56,8 @@ public class CacheViewImpl implements CacheView {
             }
         }
         return tmpItem;
+
+
     }
 
 }
