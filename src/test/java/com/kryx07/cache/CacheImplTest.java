@@ -1,3 +1,5 @@
+package com.kryx07.cache;
+
 import com.kryx07.cache.item.CacheItem;
 import com.kryx07.cache.item.CacheItemImpl;
 import com.kryx07.cache.view.CacheView;
@@ -61,10 +63,10 @@ public class CacheImplTest {
 
     }
 
-    @Test(timeout = 300)
+    @Test(timeout = 450)
     public void stressTestObjectCacheTime(){
-        for(int i=0; i<40; ++i){
-            cache=generateSampleCache(10_000);
+        for(int i=0; i<25; ++i){
+            cache=generateSampleCache(5_000);
         }
     }
 
@@ -73,7 +75,7 @@ public class CacheImplTest {
         cache = new CacheImpl(capacity);
 
         /*fill cache with sample values*/
-        for (int i = 1; i <= capacity; ++i) {
+        for (int i = 1; i <= 2* capacity; ++i) {
             cache.cacheItem("val" + i, "key" + i);
         }
 

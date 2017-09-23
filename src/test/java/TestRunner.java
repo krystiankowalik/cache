@@ -1,3 +1,4 @@
+import com.kryx07.cache.CacheImplTest;
 import com.kryx07.cache.item.CacheItemImplTest;
 import com.kryx07.cache.view.CacheViewImplTest;
 import org.junit.runner.RunWith;

@@ -1,3 +1,5 @@
+package com.kryx07.cache;
+
 import com.kryx07.cache.item.CacheItem;
 import com.kryx07.cache.view.CacheView;
 
