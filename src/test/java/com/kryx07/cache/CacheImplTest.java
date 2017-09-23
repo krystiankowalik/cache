@@ -17,8 +17,8 @@ import static org.junit.Assert.*;
 
 public class CacheImplTest {
 
-    Map<String, Object> sampleCacheContainer;
-    Cache cache;
+    private Map<String, Object> sampleCacheContainer;
+    private Cache cache;
 
     @Before
     public void setUp() throws Exception {
@@ -88,10 +88,12 @@ public class CacheImplTest {
     }
 
 
-    @Test(timeout = 450)
+    @Test//(timeout = 450)
     public void stressTestObjectCacheTime() {
-        for (int i = 0; i < 25; ++i) {
-            cache = generateSampleCache(5_000);
+        int iterations = 600;
+        int cacheSize = 60_000;
+        for (int i = 0; i < iterations; ++i) {
+            cache = generateSampleCache(cacheSize);
         }
     }
 
