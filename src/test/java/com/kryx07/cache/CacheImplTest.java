@@ -1,17 +1,10 @@
 package com.kryx07.cache;
 
-import com.kryx07.cache.item.CacheItem;
-import com.kryx07.cache.item.CacheItemImpl;
 import com.kryx07.cache.view.CacheView;
 import com.kryx07.cache.view.CacheViewImpl;
 import org.apache.commons.collections4.map.ListOrderedMap;
 import org.junit.Before;
 import org.junit.Test;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.*;
 
@@ -85,10 +78,12 @@ public class CacheImplTest {
     }
 
 
-    @Test(timeout = 450)
+    @Test//(timeout = 450)
     public void stressTestObjectCacheTime() {
-        for (int i = 0; i < 25; ++i) {
-            cache = generateSampleCache(5_000);
+        int iterations = 600;
+        int cacheSize = 60_000;
+        for (int i = 0; i < iterations; ++i) {
+            cache = generateSampleCache(cacheSize);
         }
     }
 
