@@ -63,10 +63,32 @@ public class CacheImplTest {
 
     }
 
+    @Test
+    public void cacheSizeShouldNotExceedMaxCapacity() throws Exception {
+
+        int cacheSize = 10;
+        cache = generateSampleCache(cacheSize);
+
+        assertEquals(cacheSize, cache.getView().size());
+
+        cache.cacheItem(new Object(),"key1");
+        assertEquals(cacheSize, cache.getView().size());
+
+        cache.cacheItem(new Object(),"key2");
+        assertEquals(cacheSize, cache.getView().size());
+
+        cache.cacheItem(new Object(),"key3");
+        assertEquals(cacheSize, cache.getView().size());
+
+        cache.cacheItem(new Object(),"key4");
+        assertEquals(cacheSize, cache.getView().size());
+    }
+
+
     @Test(timeout = 450)
-    public void stressTestObjectCacheTime(){
-        for(int i=0; i<25; ++i){
-            cache=generateSampleCache(5_000);
+    public void stressTestObjectCacheTime() {
+        for (int i = 0; i < 25; ++i) {
+            cache = generateSampleCache(5_000);
         }
     }
 
@@ -75,7 +97,7 @@ public class CacheImplTest {
         cache = new CacheImpl(capacity);
 
         /*fill cache with sample values*/
-        for (int i = 1; i <= 2* capacity; ++i) {
+        for (int i = 1; i <= capacity; ++i) {
             cache.cacheItem("val" + i, "key" + i);
         }
 

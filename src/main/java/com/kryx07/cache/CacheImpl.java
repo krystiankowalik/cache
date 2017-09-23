@@ -9,8 +9,6 @@ import org.apache.commons.collections4.map.ListOrderedMap;
 public class CacheImpl implements Cache {
 
     private ListOrderedMap<String, CacheItem> cachedItems;
-//    CircularFifoQueue circularFifoQueue;
-//    LinkedHashMap linkedHashMap;
 
     private int maxCacheSize;
 
@@ -22,23 +20,22 @@ public class CacheImpl implements Cache {
     @Override
     public CacheItem cacheItem(Object item, String key) {
         CacheItem cacheItem = new CacheItemImpl(key, item);
+        synchronized (this) {
             cachedItems.put(key, cacheItem);
             if (cachedItems.size() > maxCacheSize) {
                 cachedItems.remove(0);
             }
+        }
         return cacheItem;
     }
 
     @Override
-    public void invalidateCache() {
-        synchronized (this) {
-            cachedItems.clear();
-        }
+    public synchronized void invalidateCache() {
+        cachedItems.clear();
     }
 
     @Override
-    public CacheView getView() {
-
+    public synchronized CacheView getView() {
         return new CacheViewImpl(cachedItems);
     }
 }
