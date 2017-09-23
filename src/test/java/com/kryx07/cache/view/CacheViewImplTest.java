@@ -3,16 +3,13 @@ package com.kryx07.cache.view;
 import com.kryx07.cache.item.CacheItem;
 import com.kryx07.cache.item.CacheItemImpl;
 import org.apache.commons.collections4.map.ListOrderedMap;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class CacheViewImplTest {
 
@@ -80,7 +77,7 @@ public class CacheViewImplTest {
     }
 
     @Test
-    public void getItemByIndexTest2() throws Exception {
+    public void getItemByIndexStressTest() throws Exception {
         //set max size of the cache
         int size = 65_000;
 
@@ -105,6 +102,36 @@ public class CacheViewImplTest {
         for (int i = 0; i < cacheView.size(); ++i) {
             assertEquals(list.get(i), cacheView.getItem(i));
             assertEquals(new CacheItemImpl(Character.toString((char) i), i), cacheView.getItem(i));
+        }
+
+    }
+
+    @Test
+    public void getItemByKeyStressTest() throws Exception {
+        //set max size of the cache
+        int size = 65_000;
+
+        //generate cache contents in a list
+        List<CacheItem> list = new ArrayList<>(size);
+        for (int i = 0; i < size; ++i) {
+            list.add(new CacheItemImpl(Character.toString((char) i), i));
+        }
+
+        //rewrite the contents of the list to listOrderedMap
+        ListOrderedMap<String, CacheItem> sampleCache = new ListOrderedMap<>();
+        for (int i = 0; i < list.size(); ++i) {
+            sampleCache.put(list.get(i).getKey(), list.get(i));
+        }
+        cacheView = new CacheViewImpl(sampleCache);
+
+        /*
+        * check if the item under the queried index matches the corresponding item from the list and a newly created
+        * item with the same key and value - may catch problems within the equals method of the underlying model object
+        */
+
+        for (int i = 0; i < cacheView.size(); ++i) {
+            assertEquals(list.get(i), cacheView.getItem(Character.toString((char) i)));
+            assertEquals(new CacheItemImpl(Character.toString((char) i), i), cacheView.getItem(Character.toString((char) i)));
         }
 
     }
