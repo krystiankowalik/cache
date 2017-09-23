@@ -1,14 +1,16 @@
 package com.kryx07.cache.view;
 
 import com.kryx07.cache.item.CacheItem;
-import org.apache.commons.collections4.map.ListOrderedMap;
+
+import java.util.ArrayList;
+import java.util.Map;
 
 public class CacheViewImpl implements CacheView {
 
 
-    private ListOrderedMap<String, CacheItem> cachedItems;
+    private Map<String, CacheItem> cachedItems;
 
-    public CacheViewImpl(ListOrderedMap<String, CacheItem> cachedItems) {
+    public CacheViewImpl(Map<String, CacheItem> cachedItems) {
         this.cachedItems = cachedItems;
     }
 
@@ -19,7 +21,7 @@ public class CacheViewImpl implements CacheView {
 
     @Override
     public synchronized CacheItem getItem(int index) {
-        return cachedItems.getValue(index);
+        return new ArrayList<>(cachedItems.values()).get(index);
     }
 
     @Override

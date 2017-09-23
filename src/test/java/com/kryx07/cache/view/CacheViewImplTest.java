@@ -3,16 +3,13 @@ package com.kryx07.cache.view;
 import com.kryx07.cache.item.CacheItem;
 import com.kryx07.cache.item.CacheItemImpl;
 import org.apache.commons.collections4.map.ListOrderedMap;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class CacheViewImplTest {
 
@@ -79,7 +76,7 @@ public class CacheViewImplTest {
 
     }
 
-    @Test
+    @Test(timeout = 500)
     public void getItemByIndexTest2() throws Exception {
         //set max size of the cache
         int size = 65_000;
