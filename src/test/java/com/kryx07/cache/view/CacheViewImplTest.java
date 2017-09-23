@@ -77,7 +77,7 @@ public class CacheViewImplTest {
     }*/
 
     @Test//(timeout = 500)
-    public void getItemByIndexTest2() throws Exception {
+    public void getItemByIndexStressTest() throws Exception {
         //set max size of the cache
         int size = 65_000;
 
