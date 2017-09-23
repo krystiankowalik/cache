@@ -14,7 +14,7 @@ public class CacheImpl implements Cache {
     private Map<String, CacheItem> cachedItems;
 
     public CacheImpl(int maxCacheSize) {
-        this.cachedItems = Collections.synchronizedMap(new LinkedHashMap(maxCacheSize, 0.75f, true) {
+        this.cachedItems = Collections.synchronizedMap(new LinkedHashMap(maxCacheSize, 0.75f, false) {
             @Override
             protected boolean removeEldestEntry(Map.Entry eldest) {
                 return size() > maxCacheSize;
