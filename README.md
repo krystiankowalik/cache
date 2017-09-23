@@ -4,7 +4,9 @@ Sample implementation of cache for java applications to improve performance for 
 
 ## Specification
 
-Application freezes due to recurring requests which yield identical results for the same sets of parameters. The cache to improve the performance in this case should implements the following interfaces:
+Application freezes due to recurring requests which yield identical results for the same sets of parameters. The cache to improve the performance in this case should implement the following interfaces:
+
+CacheItem - the base container for individual objects retrievable from CacheItem through getValue() method.   
 
 ```
 public interface CacheItem {
@@ -19,6 +21,10 @@ public interface CacheItem {
      */
     Object getValue();
 }
+
+```
+CacheView - allows to view the contents of the cache providing read-only methods:
+```
 
 public interface CacheView {
 
@@ -40,6 +46,10 @@ public interface CacheView {
      */
     CacheItem getItem(String key);
 }
+
+```
+Cache - allows to modify the cache by adding new objects or deleting all items from cache. It can also return view of the cache.
+```
 
 public interface Cache {
 
@@ -63,7 +73,6 @@ public interface Cache {
     CacheView getView();
 }
 
-
 ```
 
 ### Considerations
@@ -75,7 +84,9 @@ First of all, the idea behind the cache is to improve the performance of the app
 This data structure has been implemented as a Map decorated with a List. The underlying Map holds the key-value associations and the List ensures the order elements' addition is stored. Thus, the elements are searchable by both key and index with O(1) complexity.
 
 For the sake of comparison, I added 2 more sample implementations as branches to this project:
-* [CircularFifoQueue](https://github.com/krystiankowalik/cache/tree/CircularFifoQueue_Impl/) - The implementation uses CircularFifoQueue from org.apache.commons.collections4.map. The container seemed for the purposes of this project, as it has been implemented as a queue with a predetermined, fixed number of elements which removes the eldest member when adding a new one if the maximum capacity is reached. Unfortunately, the tests have proved that get(String key) method was not optimal. The data structure does does not provide key/value mappings so they were retrieved by iterating through all elements, which is likely to result is O(log(n)) computational complexity.
-* [LinkedHashMap](https://github.com/krystiankowalik/cache/tree/LinkedHashMap_impl) - This implementation used LinkedHashMap as the underlying cache container. It can also be set to remove the eldest entry on adding new elements when the specified maximum capacity has been reached. Neverthereless, while when dealing with retrieval by key the LinkedHashMap is very efficient and it 
+* [CircularFifoQueue](https://github.com/krystiankowalik/cache/tree/CircularFifoQueue_Impl/) - The implementation uses CircularFifoQueue from org.apache.commons.collections4.map. The container seemed handy for the purposes of this project, as it has been implemented as a queue with a predetermined, fixed number of elements which removes the eldest member when adding a new one if the maximum capacity is reached. Unfortunately, the tests have proved that get(String key) method was not optimal. The data structure does does not provide key/value mappings so they were retrieved by iterating through all elements, which is likely to result is O(log(n)) computational complexity.
+* [LinkedHashMap](https://github.com/krystiankowalik/cache/tree/LinkedHashMap_impl) - This implementation used LinkedHashMap as the underlying cache container. It can also be set to remove the eldest entry on adding new elements when the specified maximum capacity has been reached. Neverthereless, while when dealing with retrieval by key, the LinkedHashMap has proved to be very efficient and it does preserve the order in which the elements are added, it has not been designed to access elements by index, which can observed by running the stress tests.
+
+ 
  
 
