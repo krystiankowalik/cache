@@ -5,6 +5,7 @@ import com.kryx07.cache.item.CacheItemImpl;
 import com.kryx07.cache.view.CacheView;
 import com.kryx07.cache.view.CacheViewImpl;
 
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -12,16 +13,13 @@ public class CacheImpl implements Cache {
 
     private Map<String, CacheItem> cachedItems;
 
-    private int maxCacheSize;
-
     public CacheImpl(int maxCacheSize) {
-        this.cachedItems = new LinkedHashMap<String, CacheItem>(maxCacheSize, 0.75f, true) {
+        this.cachedItems = Collections.synchronizedMap(new LinkedHashMap(maxCacheSize, 0.75f, true) {
             @Override
             protected boolean removeEldestEntry(Map.Entry eldest) {
-                return true;
+                return size() > maxCacheSize;
             }
-        };
-        this.maxCacheSize = maxCacheSize;
+        });
     }
 
     @Override
