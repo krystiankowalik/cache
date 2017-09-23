@@ -4,27 +4,22 @@ import com.kryx07.cache.item.CacheItem;
 import com.kryx07.cache.item.CacheItemImpl;
 import com.kryx07.cache.view.CacheView;
 import com.kryx07.cache.view.CacheViewImpl;
-import org.apache.commons.collections4.map.ListOrderedMap;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 
 public class CacheImpl implements Cache {
 
-    private ListOrderedMap<String, CacheItem> cachedItems;
+    private CircularFifoQueue<CacheItem> cachedItems;
 
-    private int maxCacheSize;
 
     public CacheImpl(int maxCacheSize) {
-        this.cachedItems = new ListOrderedMap<>();
-        this.maxCacheSize = maxCacheSize;
+        this.cachedItems = new CircularFifoQueue<>(maxCacheSize);
     }
 
     @Override
     public CacheItem cacheItem(Object item, String key) {
         CacheItem cacheItem = new CacheItemImpl(key, item);
         synchronized (this) {
-            cachedItems.put(key, cacheItem);
-            if (cachedItems.size() > maxCacheSize) {
-                cachedItems.remove(0);
-            }
+            cachedItems.add(cacheItem);
         }
         return cacheItem;
     }

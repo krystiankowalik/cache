@@ -2,7 +2,7 @@ package com.kryx07.cache.view;
 
 import com.kryx07.cache.item.CacheItem;
 import com.kryx07.cache.item.CacheItemImpl;
-import org.apache.commons.collections4.map.ListOrderedMap;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,7 +18,7 @@ public class CacheViewImplTest {
     @Before
 
     public void setUp() throws Exception {
-        cacheView = new CacheViewImpl(new ListOrderedMap<>());
+        cacheView = new CacheViewImpl(new CircularFifoQueue<>());
     }
 
     @Test
@@ -28,10 +28,10 @@ public class CacheViewImplTest {
 
     @Test
     public void sizeOfNonEmptyCollectionShouldReturnItsNumberOfElements() {
-        ListOrderedMap<String, CacheItem> sampleCache = new ListOrderedMap<>();
+        CircularFifoQueue<CacheItem> sampleCache = new CircularFifoQueue<>(3001);
         int i;
         for (i = 0; i <= 3000; ++i) {
-            sampleCache.put(Character.toString((char) i), new CacheItemImpl(Character.toString((char) i), i));
+            sampleCache.add(new CacheItemImpl(Character.toString((char) i), i));
         }
         cacheView = new CacheViewImpl(sampleCache);
         assertEquals(i, cacheView.size());
@@ -39,11 +39,11 @@ public class CacheViewImplTest {
 
     @Test
     public void sizeOfNonEmptyCollectionShouldReturnItsNumberOfElements2() {
-        ListOrderedMap<String, CacheItem> sampleCache = new ListOrderedMap<>();
+        CircularFifoQueue<CacheItem> sampleCache = new CircularFifoQueue<>(3001);
         int i;
         int elementsCount = 0;
         for (i = 0; i <= 3000; ++i) {
-            sampleCache.put(Character.toString((char) i), new CacheItemImpl(Character.toString((char) i), i));
+            sampleCache.add(new CacheItemImpl(Character.toString((char) i), i));
             elementsCount++;
         }
         cacheView = new CacheViewImpl(sampleCache);
@@ -53,26 +53,16 @@ public class CacheViewImplTest {
     @Test
     public void getItemByIndexTest() throws Exception {
         //add a sample cacheItem to the newly created listOrderedMap
-        ListOrderedMap sampleCache = new ListOrderedMap<>();
+        CircularFifoQueue sampleCache = new CircularFifoQueue();
         CacheItemImpl cacheItem = new CacheItemImpl("a", "A");
-        sampleCache.put("a", cacheItem);
+        sampleCache.add(cacheItem);
         cacheView = new CacheViewImpl(sampleCache);
 
         //check if you retrieved the same object
-        assertEquals(sampleCache.getValue(0), cacheView.getItem(0));
+        assertEquals(sampleCache.get(0), cacheView.getItem(0));
         assertEquals(cacheItem, cacheView.getItem(0));
         assertEquals(new CacheItemImpl("a", "A"), cacheView.getItem(0));
 
-
-    }
-
-    @Test(expected = Exception.class)
-    public void getItemByIndexTestShouldThrowExceptionWhenTheSizeIsExceeded() throws Exception {
-        ListOrderedMap sampleCache = new ListOrderedMap<>();
-        CacheItemImpl cacheItem = new CacheItemImpl("a", "A");
-        sampleCache.put("a", cacheItem);
-        cacheView = new CacheViewImpl(sampleCache);
-        cacheView.getItem(150);
 
     }
 
@@ -88,10 +78,8 @@ public class CacheViewImplTest {
         }
 
         //rewrite the contents of the list to listOrderedMap
-        ListOrderedMap<String, CacheItem> sampleCache = new ListOrderedMap<>();
-        for (int i = 0; i < list.size(); ++i) {
-            sampleCache.put(list.get(i).getKey(), list.get(i));
-        }
+        CircularFifoQueue<CacheItem> sampleCache = new CircularFifoQueue<>(size);
+        sampleCache.addAll(list);
         cacheView = new CacheViewImpl(sampleCache);
 
         /*
@@ -100,6 +88,7 @@ public class CacheViewImplTest {
         */
 
         for (int i = 0; i < cacheView.size(); ++i) {
+            //System.out.println(list.get(i).getValue()+ "==" +cacheView.getItem(i).getValue());
             assertEquals(list.get(i), cacheView.getItem(i));
             assertEquals(new CacheItemImpl(Character.toString((char) i), i), cacheView.getItem(i));
         }
@@ -118,10 +107,8 @@ public class CacheViewImplTest {
         }
 
         //rewrite the contents of the list to listOrderedMap
-        ListOrderedMap<String, CacheItem> sampleCache = new ListOrderedMap<>();
-        for (int i = 0; i < list.size(); ++i) {
-            sampleCache.put(list.get(i).getKey(), list.get(i));
-        }
+        CircularFifoQueue<CacheItem> sampleCache = new CircularFifoQueue<>(size);
+        sampleCache.addAll(list);
         cacheView = new CacheViewImpl(sampleCache);
 
         /*
@@ -130,6 +117,7 @@ public class CacheViewImplTest {
         */
 
         for (int i = 0; i < cacheView.size(); ++i) {
+            //System.out.println(list.get(i)+"=="+cacheView.getItem(Character.toString((char) i)));
             assertEquals(list.get(i), cacheView.getItem(Character.toString((char) i)));
             assertEquals(new CacheItemImpl(Character.toString((char) i), i), cacheView.getItem(Character.toString((char) i)));
         }
@@ -138,18 +126,19 @@ public class CacheViewImplTest {
 
     @Test
     public void getItemByKeyTest() throws Exception {
-        ListOrderedMap<String, CacheItem> sampleCache = new ListOrderedMap<>();
-        for (int i = 0; i <= 3000; ++i) {
-            sampleCache.put(Character.toString((char) i), new CacheItemImpl(Character.toString((char) i), i));
+        int size = 3000;
+        CircularFifoQueue<CacheItem> sampleCache = new CircularFifoQueue<>(size);
+        for (int i = 0; i < size; ++i) {
+            sampleCache.add(new CacheItemImpl(Character.toString((char) i), i));
         }
         cacheView = new CacheViewImpl(sampleCache);
 
         int queriedChar = 500;
         assertEquals(new CacheItemImpl(Character.toString((char) queriedChar), queriedChar), cacheView.getItem(Character.toString((char) queriedChar)));
-        assertEquals(new CacheItemImpl("a", 97),cacheView.getItem("a"));
-        assertEquals(new CacheItemImpl("b", 98),cacheView.getItem("b"));
-        assertEquals(new CacheItemImpl("c", 99),cacheView.getItem("c"));
-        assertEquals(new CacheItemImpl("d", 100),cacheView.getItem("d"));
+        assertEquals(new CacheItemImpl("a", 97), cacheView.getItem("a"));
+        assertEquals(new CacheItemImpl("b", 98), cacheView.getItem("b"));
+        assertEquals(new CacheItemImpl("c", 99), cacheView.getItem("c"));
+        assertEquals(new CacheItemImpl("d", 100), cacheView.getItem("d"));
 
     }
 
