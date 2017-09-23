@@ -70,5 +70,12 @@ public interface Cache {
 
 #### Computational complexity
 
-Due to the nature of cache, it will require to save and retrieve operations. Therefore, the most importa
+First of all, the idea behind the cache is to improve the performance of the application. For this reason, it is paramount to ensure that it does not slow it down by itself. The purpose of the cache requires that objects are retrieved/saved with each request. Since the interfaces to be implemented in the project provide that a cache item can be retrieved by both key and index, the natural concern that arises is that of the proper data structure to hold the cache's contents. With a view to ensuring that both of those operations will be performed with an optimal computation complexity, I have selected ListOrderedMap from org.apache.commons.collections4.map to be the container. 
+
+This data structure has been implemented as a Map decorated with a List. The underlying Map holds the key-value associations and the List ensures the order elements' addition is stored. Thus, the elements are searchable by both key and index with O(1) complexity.
+
+For the sake of comparison, I added 2 more sample implementations as branches to this project:
+* [CircularFifoQueue](https://github.com/krystiankowalik/cache/tree/CircularFifoQueue_Impl/) - The implementation uses CircularFifoQueue from org.apache.commons.collections4.map. The container seemed for the purposes of this project, as it has been implemented as a queue with a predetermined, fixed number of elements which removes the eldest member when adding a new one if the maximum capacity is reached. Unfortunately, the tests have proved that get(String key) method was not optimal. The data structure does does not provide key/value mappings so they were retrieved by iterating through all elements, which is likely to result is O(log(n)) computational complexity.
+* [LinkedHashMap](https://github.com/krystiankowalik/cache/tree/LinkedHashMap_impl) - This implementation used LinkedHashMap as the underlying cache container. It can also be set to remove the eldest entry on adding new elements when the specified maximum capacity has been reached. Neverthereless, while when dealing with retrieval by key the LinkedHashMap is very efficient and it 
+ 
 
