@@ -95,7 +95,7 @@ cache: [B,C,D]
 
 The project's structure should be kept as simple as possible. 
 
-*The specification does not explicitly provide if duplicates within cache are permitted, but since they would go against the purpose of cache, I assume no duplicate entries are allowed. Therefore, attempts to add to cache an object already present there, will not have effect.
+*The specification does not explicitly provide if duplicates within cache are permitted, but since they would go against the purpose of cache, I assume no duplicate entries are allowed. Therefore, attempts to cache an already cached object, will not have effect.
 
 ## Considerations
 
@@ -132,7 +132,7 @@ There is an issue which might be considered a minor defect from the perspective 
 While it may seem to be a non-standard approach, it was necessary to access ListOrderedMap-specific method in CacheViewImpl.java:
 
 ```
-@Override
+    @Override
     public synchronized CacheItem getItem(int index) {
         return cachedItems.getValue(index);
     }
@@ -140,6 +140,17 @@ While it may seem to be a non-standard approach, it was necessary to access List
 
 ### Unit tests
 
+In order hold to to the standards of TDD, the project also includes unit tests. The most interesting results were yield by "stress" tests:
+* stressTestObjectCacheTime - measures how long it takes for an implementation to fill up a 60 000-long cache 600 times.
+* getItemByKeyStressTest - measures how long it take for an implementation to retrieve all CacheItems from a 65 000-long cache by key.
+* getItemByIndexStressTest - measures how long it take for an implementation to retrieve all CacheItems from a 65 000-long cache by index.
+
+| Test Name | ListOrderedMap | HashMap+ArrayList|LinkedHashMap|CircularFifoQueue|
+| :------------ |:---------------:| :-----:|:-----:|:-----:|
+|stressTestObjectCacheTime     | 4s 738ms| $1600 |$1600 |$1600 |
+| getItemByKeyStressTest    | 29ms        |   $12 |$1600 |$1600 |
+| getItemByIndexStressTest | 36ms|    $1 |$1600 |$1600 |
+  
 
  
 

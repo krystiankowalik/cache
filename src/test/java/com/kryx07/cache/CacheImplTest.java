@@ -78,7 +78,7 @@ public class CacheImplTest {
     }
 
 
-    @Test//(timeout = 450)
+    @Test(timeout = 5500)
     public void stressTestObjectCacheTime() {
         int iterations = 600;
         int cacheSize = 60_000;
