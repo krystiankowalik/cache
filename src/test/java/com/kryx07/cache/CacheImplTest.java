@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -102,7 +103,7 @@ public class CacheImplTest {
         cache = new CacheImpl(capacity);
 
         /*fill cache with sample values*/
-        for (int i = 1; i <= capacity; ++i) {
+        for (int i = 0; i <= capacity; ++i) {
             cache.cacheItem("val" + i, "key" + i);
         }
 
@@ -125,7 +126,9 @@ public class CacheImplTest {
         for (int i = 0; i < list.size(); ++i) {
             sampleCache.put(list.get(i).getKey(), list.get(i));
         }
-        CacheView cacheView = new CacheViewImpl(sampleCache);
+        List<String> listOfKeys = list.stream().map(CacheItem::getKey).collect(Collectors.toList());
+
+        CacheView cacheView = new CacheViewImpl(sampleCache,listOfKeys);
 
         /*
         * check if the item under the queried index matches the corresponding item from the list and a newly created

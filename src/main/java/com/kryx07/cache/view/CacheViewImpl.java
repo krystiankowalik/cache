@@ -2,16 +2,18 @@ package com.kryx07.cache.view;
 
 import com.kryx07.cache.item.CacheItem;
 
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 public class CacheViewImpl implements CacheView {
 
 
-    private Map<String, CacheItem> cachedItems;
+    private final Map<String, CacheItem> cachedItems;
+    private final List<String> cacheKeys;
 
-    public CacheViewImpl(Map<String, CacheItem> cachedItems) {
+    public CacheViewImpl(Map<String, CacheItem> cachedItems, List<String> cacheKeys) {
         this.cachedItems = cachedItems;
+        this.cacheKeys = cacheKeys;
     }
 
     @Override
@@ -21,30 +23,7 @@ public class CacheViewImpl implements CacheView {
 
     @Override
     public synchronized CacheItem getItem(int index) {
-        /*
-         * getting element by index using list
-        */
-        //return new ArrayList<>(cachedItems.values()).get(index);
-
-        /*
-         * getting element by index using array
-         **/
-        //return (CacheItem) cachedItems.values().toArray()[index];
-
-        /*
-         * getting element by index using iterator (most efficient)
-         **/
-        Iterator<CacheItem> it = cachedItems.values().iterator();
-
-        int i = 0;
-        while (it.hasNext()) {
-            if (i == index) {
-                return it.next();
-            }
-            ++i;
-            it.next();
-        }
-        return null;
+        return cachedItems.get(cacheKeys.get(index));
     }
 
     @Override

@@ -35,4 +35,13 @@ public class CacheItemImpl implements CacheItem {
     public int hashCode() {
         return Objects.hash(key,value);
     }
+
+    @Override
+    public String toString() {
+        final StringBuffer sb = new StringBuffer("CacheItemImpl{");
+        sb.append("key='").append(key).append('\'');
+        sb.append(", value=").append(value);
+        sb.append('}');
+        return sb.toString();
+    }
 }

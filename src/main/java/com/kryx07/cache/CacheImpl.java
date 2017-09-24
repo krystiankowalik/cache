@@ -5,28 +5,33 @@ import com.kryx07.cache.item.CacheItemImpl;
 import com.kryx07.cache.view.CacheView;
 import com.kryx07.cache.view.CacheViewImpl;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 public class CacheImpl implements Cache {
 
-    private Map<String, CacheItem> cachedItems;
+    private final Map<String, CacheItem> cachedItems;
+    private List<String> cacheKeys;
+    private final int maxCacheSize;
 
     public CacheImpl(int maxCacheSize) {
-        this.cachedItems = Collections.synchronizedMap(new LinkedHashMap(maxCacheSize, 0.75f, false) {
-            @Override
-            protected boolean removeEldestEntry(Map.Entry eldest) {
-                return size() > maxCacheSize;
-            }
-        });
+        cachedItems = Collections.synchronizedMap(new HashMap<>(maxCacheSize));
+        cacheKeys = Collections.synchronizedList(new ArrayList<>(maxCacheSize));
+        this.maxCacheSize = maxCacheSize;
     }
 
     @Override
     public CacheItem cacheItem(Object item, String key) {
         CacheItem cacheItem = new CacheItemImpl(key, item);
         synchronized (this) {
-            cachedItems.putIfAbsent(key, cacheItem);
+            if (cachedItems.putIfAbsent(key, cacheItem) == null) {
+                cacheKeys.add(key);
+            }
+            if (cacheKeys.size() > maxCacheSize && cacheKeys.size() > 0) {
+                String keyToRemove = cacheKeys.get(0);
+                cachedItems.remove(keyToRemove);
+                cacheKeys = cacheKeys.subList(1, cacheKeys.size() - 1);
+            }
+
         }
         return cacheItem;
     }
@@ -38,6 +43,6 @@ public class CacheImpl implements Cache {
 
     @Override
     public synchronized CacheView getView() {
-        return new CacheViewImpl(cachedItems);
+        return new CacheViewImpl(cachedItems, cacheKeys);
     }
 }
