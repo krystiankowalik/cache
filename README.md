@@ -145,12 +145,14 @@ In order hold to to the standards of TDD, the project also includes unit tests. 
 * getItemByKeyStressTest - measures how long it take for an implementation to retrieve all CacheItems from a 65 000-long cache by key.
 * getItemByIndexStressTest - measures how long it take for an implementation to retrieve all CacheItems from a 65 000-long cache by index.
 
+The results were as follows:
+
 | Test Name | ListOrderedMap | HashMap+ArrayList|LinkedHashMap|CircularFifoQueue|
 | :------------ |:---------------:| :-----:|:-----:|:-----:|
 |stressTestObjectCacheTime     | 4s 738ms| 5s 256ms|4s 676ms |2s 503ms |
 | getItemByKeyStressTest    | 29ms        |  203ms|117ms |20s 791ms |
 | getItemByIndexStressTest | 36ms|    35 ms|40s 543ms|21ms|
   
-
+The tests prove that the containers for cache with optimal performance are: ListOrderedMap and HashMap+ArrayList. As the first is more efficient and provides a greater quality of code, it was selected for this purpose.
  
 
