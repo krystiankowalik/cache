@@ -17,16 +17,23 @@ public class CacheImpl implements Cache {
         this.maxCacheSize = maxCacheSize;
     }
 
+    private void checkSize() {
+        if (cachedItems.size() > maxCacheSize) {
+            cachedItems.remove(0);
+        }
+    }
+
+    private synchronized CacheItem putIfAbsent(CacheItem cacheItem, String key) {
+        CacheItem existingCacheItem = cachedItems.putIfAbsent(key, cacheItem);
+        checkSize();
+        return existingCacheItem;
+    }
+
     @Override
     public CacheItem cacheItem(Object item, String key) {
-        CacheItem cacheItem = new CacheItemImpl(key, item);
-        synchronized (this) {
-            cachedItems.put(key, cacheItem);
-            if (cachedItems.size() > maxCacheSize) {
-                cachedItems.remove(0);
-            }
-        }
-        return cacheItem;
+        CacheItem newCacheItem = new CacheItemImpl(key, item);
+        CacheItem existingCacheItem = putIfAbsent(newCacheItem, key);
+        return existingCacheItem == null ? newCacheItem : existingCacheItem;
     }
 
     @Override

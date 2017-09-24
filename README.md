@@ -75,13 +75,35 @@ public interface Cache {
 
 ```
 
-### Considerations
+The cache's size is to be configurable. When the cache exceeds the specified size, it should drop the element added first (FIFO). Example of a 3-element cache with queried objects: A,B,C,D:
 
-#### Computational complexity
+```
+cache: []
+
+object A is queried
+cache: [A]
+
+object B is queried
+cache: [A,B]
+
+object C is queried
+cache: [A,B,C]
+
+object D is queried
+cache: [B,C,D]
+```
+
+The project's structure should be kept as simple as possible. 
+
+*The specification does not explicitly provide if duplicates within cache are permitted, but since they would go against the purpose of cache, I assume no duplicate entries are allowed. Therefore, attempts to add to cache an object already present there, will not have effect.
+
+## Considerations
+
+### Computational complexity
 
 First of all, the idea behind the cache is to improve the performance of the application. For this reason, it is paramount to ensure that it does not slow it down by itself. The purpose of the cache requires that objects are retrieved/saved with each request. Since the interfaces to be implemented in the project provide that a cache item can be retrieved by both key and index, the natural concern that arises is that of the proper data structure to hold the cache's contents. With a view to ensuring that both of those operations will be performed with an optimal computational complexity, I have selected ListOrderedMap from org.apache.commons.collections4.map to be the container. 
 
-#### Underlying data structure
+### Underlying data structure
 
 ListOrderedMap has been implemented as a Map decorated with a List. The underlying Map holds the key-value associations and the List ensures the order of elements' addition is retained. Thus, the elements are searchable by both key and index with O(1) complexity.
 
@@ -89,13 +111,18 @@ ListOrderedMap has been implemented as a Map decorated with a List. The underlyi
 For the sake of comparison, I added 3 more sample implementations as branches to this project:
 * [CircularFifoQueue](https://github.com/krystiankowalik/cache/tree/CircularFifoQueue_Impl/) - The implementation uses CircularFifoQueue from org.apache.commons.collections4.map. The container seemed handy for the purposes of this project, as it has been implemented as a queue with a predetermined, fixed number of elements which removes the eldest member when adding a new one if the maximum capacity is reached. Unfortunately, the tests have proved that get(String key) method was not optimal. The data structure does  not provide key/value mappings so they were retrieved by iterating through all values, which is likely to result is O(log(n)) computational complexity.
 * [LinkedHashMap](https://github.com/krystiankowalik/cache/tree/LinkedHashMap_impl) - This implementation used LinkedHashMap as the underlying cache container. It can also be set to remove the eldest entry on adding new elements when the specified maximum capacity has been reached. Nevertheless, while when dealing with retrieval by key, the LinkedHashMap has proved to be very efficient and it does preserve the order in which the elements are added, it has not been designed to access elements by index, which can observed by running the stress tests. Therefore, it was also rejected.
-* [HashMap+ArrayList](https://github.com/krystiankowalik/cache/tree/HashMap_Impl) - This implementation combines the use of HashMap as the primary container of the cache items and the tool for key/value associations with ArrayList as the store of keys in order of addition. Similarly to ListOrderedMap, this data structure combination allows to efficiently retrieve CacheItems by both index and key. However, it has not been chosen as the best structure, as it required a more 'boiler-plate' implementation within the cache source code, reducing the readability of the code. Furthermore, looking at the timings of the unit tests, ListOrderedMap seems to be slightly better optimized. 
+* [HashMap+ArrayList](https://github.com/krystiankowalik/cache/tree/HashMap_Impl) - This implementation combines the use of HashMap as the primary container of the cache items and the tool for key/value associations with ArrayList as the store of keys in order of addition. Similarly to ListOrderedMap, this data structure combination allows to efficiently retrieve CacheItems by both index and key. However, it has not been chosen as the best structure, as it required a more 'boiler-plate' implementation within the cache source code, reducing the quality of the code. Furthermore, looking at the timings of the unit tests, ListOrderedMap seems to be slightly better optimized. 
 
-#### Concurrency issues
+### Concurrency issues
 
-The application which handles multiple requests to/from database or through HTTP is likely to heavily rely on multithreading to keep its flow. For this reason, it is important to provide as thread-safe cache implementation as possible. Ideally, this would be done by using the data structure designed for such operations, e.g. ConcurrentHashMap. Nevertheless, this was not possible in this case, as the map does not store the order of elements.  
+The application which handles multiple requests to/from database or through HTTP is likely to heavily rely on multithreading. For this reason, it is important to provide as thread-safe cache implementation as possible. Ideally, this would be done by using the data structure designed for such operations, e.g. ConcurrentHashMap. Nevertheless, this was not possible in this case, as the map does not store the order of elements. Thus, the thread safety in the project is ensured by synchronized blocks throughout the operations on the underlying data structure. 
 
-#### Clean code adherence
+### Clean code adherence
+
+I split the code to several packages based on the aspect of cache that the relevant files entail. The implementation of the interfaces stated in the specification enforces a hierarchical, modular structure of classes. There is one for governing the cache as a whole with the underlying data structure defined within (CacheImpl.java), another provides a the set of methods to access read-only properties of the cache (CacheViewImpl.java) and CacheItem.java  defines the basic model of the objects stored in the cache. Within the classes, I attempted to be as concise as to possible, splitting the classes to single-responsibility methods which will hopefully be pleasant to read.
+
+The specification provided that the project should be kept as simple as possible. Therefore, it has been set-up as a Maven project using only 2 dependencies: Apache-Commons-Collections4 to be able to use ListOrderedMap and JUnit4 for unit test functionality.
+
 
 ### Unit tests
 
