@@ -119,13 +119,27 @@ The application which handles multiple requests to/from database or through HTTP
 
 ### Clean code adherence
 
-I split the code to several packages based on the aspect of cache that the relevant files entail. The implementation of the interfaces stated in the specification enforces a hierarchical, modular structure of classes. There is one for governing the cache as a whole with the underlying data structure defined within (CacheImpl.java), another provides a the set of methods to access read-only properties of the cache (CacheViewImpl.java) and CacheItem.java  defines the basic model of the objects stored in the cache. Within the classes, I attempted to be as concise as to possible, splitting the classes to single-responsibility methods which will hopefully be pleasant to read.
+I split the code to several packages based on the aspects of cache that the relevant files entail. The implementation of the interfaces stated in the specification enforces a hierarchical, modular structure of classes. There is one for governing the cache as a whole with the underlying data structure defined within (CacheImpl.java), another provides a the set of methods to access read-only properties of the cache (CacheViewImpl.java) and CacheItem.java  defines the basic model of the objects stored in the cache. Within the classes, I attempted to be as concise as to possible, splitting the classes to single-responsibility methods which will hopefully be pleasant to read.
 
 The specification provided that the project should be kept as simple as possible. Therefore, it has been set-up as a Maven project using only 2 dependencies: Apache-Commons-Collections4 to be able to use ListOrderedMap and JUnit4 for unit test functionality.
 
+There is an issue which might be considered a minor defect from the perspective of clean code principles. The underlying cache container is defined explicitly as ListOrderedMap instead of using Map interface:
+
+```
+    private ListOrderedMap<String, CacheItem> cachedItems = new ListOrderedMap<>();
+```
+
+While it may seem to be a non-standard approach, it was necessary to access ListOrderedMap-specific method in CacheViewImpl.java:
+
+```
+@Override
+    public synchronized CacheItem getItem(int index) {
+        return cachedItems.getValue(index);
+    }
+```
 
 ### Unit tests
 
- 
+
  
 
