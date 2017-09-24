@@ -83,7 +83,7 @@ First of all, the idea behind the cache is to improve the performance of the app
 
 #### Underlying data structure
 
-ListOrderedMap has been implemented as a Map decorated with a List. The underlying Map holds the key-value associations and the List ensures the order of elements' addition is stored. Thus, the elements are searchable by both key and index with O(1) complexity.
+ListOrderedMap has been implemented as a Map decorated with a List. The underlying Map holds the key-value associations and the List ensures the order of elements' addition is retained. Thus, the elements are searchable by both key and index with O(1) complexity.
 
 
 For the sake of comparison, I added 3 more sample implementations as branches to this project:
@@ -92,6 +92,8 @@ For the sake of comparison, I added 3 more sample implementations as branches to
 * [HashMap+ArrayList](https://github.com/krystiankowalik/cache/tree/HashMap_Impl) - This implementation combines the use of HashMap as the primary container of the cache items and the tool for key/value associations with ArrayList as the store of keys in order of addition. Similarly to ListOrderedMap, this data structure combination allows to efficiently retrieve CacheItems by both index and key. However, it has not been chosen as the best structure, as it required a more 'boiler-plate' implementation within the cache source code, reducing the readability of the code. Furthermore, looking at the timings of the unit tests, ListOrderedMap seems to be slightly better optimized. 
 
 #### Concurrency issues
+
+The application which handles multiple requests to/from database or through HTTP is likely to heavily rely on multithreading to keep its flow. For this reason, it is important to provide as thread-safe cache implementation as possible. Ideally, this would be done by using the data structure designed for such operations, e.g. ConcurrentHashMap. Nevertheless, this was not possible in this case, as the map does not store the order of elements.  
 
 #### Clean code adherence
 
