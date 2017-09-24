@@ -5,12 +5,12 @@ import com.kryx07.cache.CacheImpl;
 import com.kryx07.cache.item.CacheItem;
 import com.kryx07.cache.item.CacheItemImpl;
 import org.apache.commons.collections4.map.ListOrderedMap;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
@@ -25,7 +25,7 @@ public class CacheViewImplTest {
         cacheView = cache.getView();
     }
 
-    @Test
+    @Test(expected = Exception.class)
     public void sizeOfEmptyCollectionShouldBeZero() throws Exception {
         cache = new CacheImpl(0);
         assertEquals("Size of empty collection should be zero", 0, cacheView.size());
@@ -73,8 +73,9 @@ public class CacheViewImplTest {
         for (int i = 0; i < list.size(); ++i) {
             sampleCache.put(list.get(i).getKey(), list.get(i));
         }
-        List<String> listOfKeys = list.stream().map(CacheItem::getKey).collect(Collectors.toList());
-        cacheView = new CacheViewImpl(sampleCache, listOfKeys);
+        CircularFifoQueue<String> keys = new CircularFifoQueue<>(size);
+        list.forEach(e -> keys.add(e.getKey()));
+        cacheView = new CacheViewImpl(sampleCache, keys);
 
         /*
         * check if the item under the queried index matches the corresponding item from the list and a newly created
@@ -99,8 +100,9 @@ public class CacheViewImplTest {
         for (int i = 0; i < size; ++i) {
             list.add(new CacheItemImpl(Character.toString((char) i), i));
         }
-        List<String> listOfKeys = list.stream().map(CacheItem::getKey).collect(Collectors.toList());
-        cacheView = new CacheViewImpl(sampleCache, listOfKeys);
+        CircularFifoQueue<String> keys = new CircularFifoQueue<>(size);
+        list.forEach(e -> keys.add(e.getKey()));
+        cacheView = new CacheViewImpl(sampleCache, keys);
 
         int queriedChar = 500;
         assertEquals(new CacheItemImpl(Character.toString((char) queriedChar), queriedChar), cacheView.getItem(Character.toString((char) queriedChar)));

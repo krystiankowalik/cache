@@ -4,18 +4,20 @@ import com.kryx07.cache.item.CacheItem;
 import com.kryx07.cache.item.CacheItemImpl;
 import com.kryx07.cache.view.CacheView;
 import com.kryx07.cache.view.CacheViewImpl;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 
-import java.util.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CacheImpl implements Cache {
 
     private final Map<String, CacheItem> cachedItems;
-    private List<String> cacheKeys;
+    private CircularFifoQueue<String> cacheKeys;
     private final int maxCacheSize;
 
     public CacheImpl(int maxCacheSize) {
-        cachedItems = Collections.synchronizedMap(new HashMap<>(maxCacheSize));
-        cacheKeys = Collections.synchronizedList(new ArrayList<>(maxCacheSize));
+        cachedItems = new ConcurrentHashMap<>(maxCacheSize);
+        cacheKeys = new CircularFifoQueue<>(maxCacheSize);
         this.maxCacheSize = maxCacheSize;
     }
 
@@ -26,10 +28,9 @@ public class CacheImpl implements Cache {
             if (cachedItems.putIfAbsent(key, cacheItem) == null) {
                 cacheKeys.add(key);
             }
-            if (cacheKeys.size() > maxCacheSize && cacheKeys.size() > 0) {
+            if (cachedItems.size() > maxCacheSize && cacheKeys.size() > 0) {
                 String keyToRemove = cacheKeys.get(0);
                 cachedItems.remove(keyToRemove);
-                cacheKeys = cacheKeys.subList(1, cacheKeys.size() - 1);
             }
 
         }

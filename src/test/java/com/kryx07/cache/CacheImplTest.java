@@ -5,6 +5,7 @@ import com.kryx07.cache.item.CacheItemImpl;
 import com.kryx07.cache.view.CacheView;
 import com.kryx07.cache.view.CacheViewImpl;
 import org.apache.commons.collections4.map.ListOrderedMap;
+import org.apache.commons.collections4.queue.CircularFifoQueue;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,7 +13,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.junit.Assert.*;
 
@@ -31,6 +31,10 @@ public class CacheImplTest {
     public void cachedItemShouldNotBeNull() throws Exception {
         /*generate a sample cache*/
         cache = generateSampleCache(3);
+
+        System.out.println(cache.getView().getItem(0));
+        System.out.println(cache.getView().getItem(1));
+        System.out.println(cache.getView().getItem(2));
 
         /*check that the cache is full*/
         for (int i = 0; i < cache.getView().size(); ++i) {
@@ -70,7 +74,7 @@ public class CacheImplTest {
         int cacheSize = 10;
         cache = generateSampleCache(cacheSize);
 
-       assertEquals(cacheSize, cache.getView().size());
+        assertEquals(cacheSize, cache.getView().size());
 
         cache.cacheItem(new Object(), "key1");
         assertEquals(cacheSize, cache.getView().size());
@@ -103,7 +107,7 @@ public class CacheImplTest {
         cache = new CacheImpl(capacity);
 
         /*fill cache with sample values*/
-        for (int i = 0; i <= capacity; ++i) {
+        for (int i = 0; i < capacity; ++i) {
             cache.cacheItem("val" + i, "key" + i);
         }
 
@@ -126,9 +130,10 @@ public class CacheImplTest {
         for (int i = 0; i < list.size(); ++i) {
             sampleCache.put(list.get(i).getKey(), list.get(i));
         }
-        List<String> listOfKeys = list.stream().map(CacheItem::getKey).collect(Collectors.toList());
+        CircularFifoQueue<String> keys = new CircularFifoQueue<>(size);
+        list.forEach(e -> keys.add(e.getKey()));
+        CacheView cacheView = new CacheViewImpl(sampleCache, keys);
 
-        CacheView cacheView = new CacheViewImpl(sampleCache,listOfKeys);
 
         /*
         * check if the item under the queried index matches the corresponding item from the list and a newly created
