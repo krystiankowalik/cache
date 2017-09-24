@@ -3,10 +3,10 @@ package com.kryx07.cache.view;
 import com.kryx07.cache.item.CacheItem;
 import org.apache.commons.collections4.map.ListOrderedMap;
 
-public class CacheViewImpl implements CacheView {
+final public class CacheViewImpl implements CacheView {
 
 
-    private ListOrderedMap<String, CacheItem> cachedItems;
+    private final ListOrderedMap<String, CacheItem> cachedItems;
 
     public CacheViewImpl(ListOrderedMap<String, CacheItem> cachedItems) {
         this.cachedItems = cachedItems;

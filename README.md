@@ -8,7 +8,7 @@ Application freezes due to recurring requests which yield identical results for 
 
 CacheItem - the base container for individual objects which are retrievable from CacheItem through getValue() method.   
 
-```
+```java
 public interface CacheItem {
     /**
      * @return the key of the cache item - a unique identifier of the item 
@@ -24,7 +24,7 @@ public interface CacheItem {
 
 ```
 CacheView - allows to view the contents of the cache by providing read-only methods:
-```
+```java
 
 public interface CacheView {
 
@@ -49,7 +49,7 @@ public interface CacheView {
 
 ```
 Cache - allows to modify the cache by adding new objects or deleting all items from cache. It can also return view of the cache.
-```
+```java
 
 public interface Cache {
 
@@ -109,7 +109,7 @@ ListOrderedMap has been implemented as a Map decorated with a List. The underlyi
 
 
 For the sake of comparison, I added 3 more sample implementations as branches to this project:
-* [CircularFifoQueue](https://github.com/krystiankowalik/cache/tree/CircularFifoQueue_Impl/) - The implementation uses CircularFifoQueue from org.apache.commons.collections4.map. The container seemed handy for the purposes of this project, as it has been implemented as a queue with a predetermined, fixed number of elements which removes the eldest member when adding a new one if the maximum capacity is reached. Unfortunately, the tests have proved that get(String key) method was not optimal. The data structure does  not provide key/value mappings so they were retrieved by iterating through all values, which is likely to result is O(log(n)) computational complexity.
+* [CircularFifoQueue](https://github.com/krystiankowalik/cache/tree/CircularFifoQueue_Impl/) - The implementation uses CircularFifoQueue from org.apache.commons.collections4.map. The container seemed handy for the purposes of this project, as it has been implemented as a queue with a predetermined, fixed number of elements which removes the eldest member when adding a new one if the maximum capacity is reached. Unfortunately, the tests have proved that get(String key) method was not optimal. The data structure does  not provide key/value mappings so they were retrieved by iterating through all values, which is not very efficient.
 * [LinkedHashMap](https://github.com/krystiankowalik/cache/tree/LinkedHashMap_impl) - This implementation used LinkedHashMap as the underlying cache container. It can also be set to remove the eldest entry on adding new elements when the specified maximum capacity has been reached. Nevertheless, while when dealing with retrieval by key, the LinkedHashMap has proved to be very efficient and it does preserve the order in which the elements are added, it has not been designed to access elements by index, which can observed by running the stress tests. Therefore, it was also rejected.
 * [HashMap+ArrayList](https://github.com/krystiankowalik/cache/tree/HashMap_Impl) - This implementation combines the use of HashMap as the primary container of the cache items and the tool for key/value associations with ArrayList as the store of keys in order of addition. Similarly to ListOrderedMap, this data structure combination allows to efficiently retrieve CacheItems by both index and key. However, it has not been chosen as the best structure, as it required a more 'boiler-plate' implementation within the cache source code, reducing the quality of the code. Furthermore, looking at the timings of the unit tests, ListOrderedMap seems to be slightly better optimized. 
 
@@ -153,6 +153,6 @@ The results were as follows:
 | getItemByKeyStressTest    | 29ms        |  203ms|117ms |20s 791ms |
 | getItemByIndexStressTest | 36ms|    35 ms|40s 543ms|21ms|
   
-The tests prove that the containers for cache with optimal performance are: ListOrderedMap and HashMap+ArrayList. As the first is more efficient and provides a greater quality of code, it was selected for this purpose.
+The tests prove that the containers for cache with optimal performance are: ListOrderedMap and HashMap+ArrayList. As the first is more efficient and provides a greater quality of code, it was selected for this purpose. 
  
 

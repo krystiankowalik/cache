@@ -6,7 +6,7 @@ import com.kryx07.cache.view.CacheView;
 import com.kryx07.cache.view.CacheViewImpl;
 import org.apache.commons.collections4.map.ListOrderedMap;
 
-public class CacheImpl implements Cache {
+final public class CacheImpl implements Cache {
 
     private ListOrderedMap<String, CacheItem> cachedItems;
 

@@ -2,7 +2,7 @@ package com.kryx07.cache.item;
 
 import java.util.Objects;
 
-public class CacheItemImpl implements CacheItem {
+final public class CacheItemImpl implements CacheItem {
 
     private String key;
     private Object value;
