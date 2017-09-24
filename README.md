@@ -147,9 +147,9 @@ In order hold to to the standards of TDD, the project also includes unit tests. 
 
 | Test Name | ListOrderedMap | HashMap+ArrayList|LinkedHashMap|CircularFifoQueue|
 | :------------ |:---------------:| :-----:|:-----:|:-----:|
-|stressTestObjectCacheTime     | 4s 738ms| $1600 |$1600 |$1600 |
-| getItemByKeyStressTest    | 29ms        |   $12 |$1600 |$1600 |
-| getItemByIndexStressTest | 36ms|    $1 |$1600 |$1600 |
+|stressTestObjectCacheTime     | 4s 738ms| 5s 256ms|4s 676ms |2s 503ms |
+| getItemByKeyStressTest    | 29ms        |  203ms|117ms |20s 791ms |
+| getItemByIndexStressTest | 36ms|    35 ms|40s 543ms|21ms|
   
 
  
