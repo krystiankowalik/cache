@@ -155,4 +155,8 @@ The results were as follows:
   
 The tests prove that the containers for cache with optimal performance are: ListOrderedMap and HashMap+ArrayList. As the first is more efficient and provides a greater quality of code, it was selected for this purpose. 
  
+Nevertheless, I believe that the solution would require further testing before implementing it as part of the system.
 
+### Eviction policy
+
+According to the specification, the cache has been implemented as a FIFO structure - if the maximum capacity is reached, the eldest element has to be removed in order to add a new one. This approach should be sufficient if the the multiple, recurring requests that affect the performance of the application coincide with each other. In the opposite scenario however, it would be worth considering structuring the cache as a LRU map, which would remove elements based on its 'popularity', i.e. how often it was accessed. Such solution would keep in the cache the most needed objects.    
