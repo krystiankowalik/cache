@@ -4,28 +4,54 @@ import com.kryx07.cache.item.CacheItem;
 import com.kryx07.cache.item.CacheItemImpl;
 import com.kryx07.cache.view.CacheView;
 import com.kryx07.cache.view.CacheViewImpl;
-import org.apache.commons.collections4.map.ListOrderedMap;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 final public class CacheImpl implements Cache {
 
-    private ListOrderedMap<String, CacheItem> cachedItems;
+    private Map<String, CacheItem> cachedItems;
+    private String[] cacheKeys;
 
-    private int maxCacheSize;
+    private int cacheKeysCount;
+    private final int maxCacheSize;
 
     public CacheImpl(int maxCacheSize) {
-        this.cachedItems = new ListOrderedMap<>();
         this.maxCacheSize = maxCacheSize;
+        this.cacheKeysCount = 0;
+        this.cachedItems = generateMapOfInitCapacity(maxCacheSize);
+        this.cacheKeys = generateArrayOfLength(maxCacheSize);
     }
 
-    private void checkSize() {
-        if (cachedItems.size() > maxCacheSize) {
-            cachedItems.remove(0);
-        }
+    private Map<String, CacheItem> generateMapOfInitCapacity(int initCapacity) {
+        return new LinkedHashMap<String, CacheItem>(initCapacity) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry eldest) {
+                return cachedItems.size() > maxCacheSize;
+            }
+        };
+    }
+
+    private String[] generateArrayOfLength(int length) {
+        return new String[length];
+    }
+
+    private String[] removeEldestEntryInArray(String[] arr) {
+        --cacheKeysCount;
+        String[] newArr = new String[arr.length];
+        System.arraycopy(arr, 1, newArr, 0, arr.length - 1);
+        return newArr;
     }
 
     private synchronized CacheItem put(CacheItem cacheItem, String key) {
         CacheItem existingCacheItem = cachedItems.put(key, cacheItem);
-        checkSize();
+        if (existingCacheItem == null) {
+            if (cacheKeysCount == maxCacheSize) {
+                cacheKeys = removeEldestEntryInArray(cacheKeys);
+            }
+            cacheKeys[cacheKeysCount] = key;
+            ++cacheKeysCount;
+        }
         return existingCacheItem;
     }
 
@@ -33,17 +59,17 @@ final public class CacheImpl implements Cache {
     public CacheItem cacheItem(Object item, String key) {
         CacheItem newCacheItem = new CacheItemImpl(key, item);
         CacheItem existingCacheItem = put(newCacheItem, key);
-        return existingCacheItem == null ? newCacheItem : existingCacheItem;
+        return existingCacheItem != null ? existingCacheItem : newCacheItem;
     }
 
     @Override
     public synchronized void invalidateCache() {
-        cachedItems.replaceAll((k, v) -> null);
-
+        cachedItems = generateMapOfInitCapacity(maxCacheSize);
+        cacheKeys = generateArrayOfLength(maxCacheSize);
     }
 
     @Override
     public synchronized CacheView getView() {
-        return new CacheViewImpl(cachedItems);
+        return new CacheViewImpl(cachedItems, cacheKeys);
     }
 }

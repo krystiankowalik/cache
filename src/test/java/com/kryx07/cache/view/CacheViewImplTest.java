@@ -7,18 +7,20 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertEquals;
 
 public class CacheViewImplTest {
 
     private CacheView cacheView;
+    private String[] cacheKeys;
 
     @Before
-
     public void setUp() throws Exception {
-        cacheView = new CacheViewImpl(new ListOrderedMap<>());
+        cacheView = new CacheViewImpl(new LinkedHashMap<>(), cacheKeys);
     }
 
     @Test
@@ -33,7 +35,7 @@ public class CacheViewImplTest {
         for (i = 0; i <= 3000; ++i) {
             sampleCache.put(Character.toString((char) i), new CacheItemImpl(Character.toString((char) i), i));
         }
-        cacheView = new CacheViewImpl(sampleCache);
+        cacheView = new CacheViewImpl(sampleCache, cacheKeys);
         assertEquals(i, cacheView.size());
     }
 
@@ -46,7 +48,7 @@ public class CacheViewImplTest {
             sampleCache.put(Character.toString((char) i), new CacheItemImpl(Character.toString((char) i), i));
             elementsCount++;
         }
-        cacheView = new CacheViewImpl(sampleCache);
+        cacheView = new CacheViewImpl(sampleCache, cacheKeys);
         assertEquals(elementsCount, cacheView.size());
     }
 
@@ -56,7 +58,8 @@ public class CacheViewImplTest {
         ListOrderedMap sampleCache = new ListOrderedMap<>();
         CacheItemImpl cacheItem = new CacheItemImpl("a", "A");
         sampleCache.put("a", cacheItem);
-        cacheView = new CacheViewImpl(sampleCache);
+        cacheKeys = new String[]{"a"};
+        cacheView = new CacheViewImpl(sampleCache, cacheKeys);
 
         //check if you retrieved the same object
         assertEquals(sampleCache.getValue(0), cacheView.getItem(0));
@@ -71,7 +74,7 @@ public class CacheViewImplTest {
         ListOrderedMap sampleCache = new ListOrderedMap<>();
         CacheItemImpl cacheItem = new CacheItemImpl("a", "A");
         sampleCache.put("a", cacheItem);
-        cacheView = new CacheViewImpl(sampleCache);
+        cacheView = new CacheViewImpl(sampleCache, cacheKeys);
         cacheView.getItem(150);
 
     }
@@ -92,7 +95,11 @@ public class CacheViewImplTest {
         for (int i = 0; i < list.size(); ++i) {
             sampleCache.put(list.get(i).getKey(), list.get(i));
         }
-        cacheView = new CacheViewImpl(sampleCache);
+
+        List<String> keysList = list.stream().map(e -> e.getKey()).collect(Collectors.toList());
+        String[] cacheKeys = keysList.toArray(new String[keysList.size()]);
+
+        cacheView = new CacheViewImpl(sampleCache, cacheKeys);
 
         /*
         * check if the item under the queried index matches the corresponding item from the list and a newly created
@@ -122,7 +129,7 @@ public class CacheViewImplTest {
         for (int i = 0; i < list.size(); ++i) {
             sampleCache.put(list.get(i).getKey(), list.get(i));
         }
-        cacheView = new CacheViewImpl(sampleCache);
+        cacheView = new CacheViewImpl(sampleCache, cacheKeys);
 
         /*
         * check if the item under the queried index matches the corresponding item from the list and a newly created
@@ -142,14 +149,14 @@ public class CacheViewImplTest {
         for (int i = 0; i <= 3000; ++i) {
             sampleCache.put(Character.toString((char) i), new CacheItemImpl(Character.toString((char) i), i));
         }
-        cacheView = new CacheViewImpl(sampleCache);
+        cacheView = new CacheViewImpl(sampleCache, cacheKeys);
 
         int queriedChar = 500;
         assertEquals(new CacheItemImpl(Character.toString((char) queriedChar), queriedChar), cacheView.getItem(Character.toString((char) queriedChar)));
-        assertEquals(new CacheItemImpl("a", 97),cacheView.getItem("a"));
-        assertEquals(new CacheItemImpl("b", 98),cacheView.getItem("b"));
-        assertEquals(new CacheItemImpl("c", 99),cacheView.getItem("c"));
-        assertEquals(new CacheItemImpl("d", 100),cacheView.getItem("d"));
+        assertEquals(new CacheItemImpl("a", 97), cacheView.getItem("a"));
+        assertEquals(new CacheItemImpl("b", 98), cacheView.getItem("b"));
+        assertEquals(new CacheItemImpl("c", 99), cacheView.getItem("c"));
+        assertEquals(new CacheItemImpl("d", 100), cacheView.getItem("d"));
 
     }
 
