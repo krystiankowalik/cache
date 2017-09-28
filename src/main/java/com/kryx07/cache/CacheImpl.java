@@ -23,7 +23,7 @@ final public class CacheImpl implements Cache {
         }
     }
 
-    private synchronized CacheItem putIfAbsent(CacheItem cacheItem, String key) {
+    private synchronized CacheItem put(CacheItem cacheItem, String key) {
         CacheItem existingCacheItem = cachedItems.putIfAbsent(key, cacheItem);
         checkSize();
         return existingCacheItem;
@@ -32,13 +32,15 @@ final public class CacheImpl implements Cache {
     @Override
     public CacheItem cacheItem(Object item, String key) {
         CacheItem newCacheItem = new CacheItemImpl(key, item);
-        CacheItem existingCacheItem = putIfAbsent(newCacheItem, key);
+        CacheItem existingCacheItem = put(newCacheItem, key);
         return existingCacheItem == null ? newCacheItem : existingCacheItem;
     }
 
     @Override
     public synchronized void invalidateCache() {
-        cachedItems.clear();
+        //cachedItems.clear();
+        cachedItems.replaceAll((k, v) -> null);
+
     }
 
     @Override
