@@ -24,7 +24,7 @@ final public class CacheImpl implements Cache {
     }
 
     private synchronized CacheItem put(CacheItem cacheItem, String key) {
-        CacheItem existingCacheItem = cachedItems.putIfAbsent(key, cacheItem);
+        CacheItem existingCacheItem = cachedItems.put(key, cacheItem);
         checkSize();
         return existingCacheItem;
     }
@@ -38,7 +38,6 @@ final public class CacheImpl implements Cache {
 
     @Override
     public synchronized void invalidateCache() {
-        //cachedItems.clear();
         cachedItems.replaceAll((k, v) -> null);
 
     }
